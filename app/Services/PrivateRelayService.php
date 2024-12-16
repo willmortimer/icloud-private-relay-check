@@ -68,18 +68,30 @@ class PrivateRelayService
             !$isChrome && 
             !$isChromium
         );
+        $isWindows = (bool) preg_match('/Windows/i', $userAgent);
+
+        // Determine browser with more specific matching
+        $browser = 'Unknown';
+        if ($isSafari) {
+            $browser = 'Safari';
+        } elseif ($isFirefox) {
+            $browser = 'Firefox' . ($isWindows ? ' (Windows)' : '');
+        } elseif ($isChrome) {
+            $browser = 'Chrome';
+        } elseif ($isChromium) {
+            $browser = 'Chromium';
+        }
 
         return [
             'is_iphone' => (bool) preg_match('/iPhone/i', $userAgent),
             'is_mac' => (bool) (preg_match('/Macintosh/i', $userAgent) || preg_match('/Mac OS X/i', $userAgent)),
+            'is_windows' => $isWindows,
             'is_safari' => $isSafari,
             'is_firefox' => $isFirefox,
             'is_chrome' => $isChrome,
             'is_chromium' => $isChromium,
-            'browser' => $isSafari ? 'Safari' : 
-                        ($isFirefox ? 'Firefox' : 
-                        ($isChrome ? 'Chrome' : 
-                        ($isChromium ? 'Chromium' : 'Other')))
+            'browser' => $browser,
+            'user_agent_display' => 'Other - ' . $userAgent
         ];
     }
 } 

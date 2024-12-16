@@ -61,8 +61,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                         data.device?.is_iphone
                                             ? "iPhone"
                                             : data.device?.is_mac
-                                            ? "Mac"
-                                            : "Other"
+                                              ? "Mac"
+                                              : "Non-Apple Device"
                                     }
                                 </p>
                                 <p class="text-base text-gray-500 dark:text-gray-400">
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                         Headers: ${JSON.stringify(
                                             data.device?.headers,
                                             null,
-                                            2
+                                            2,
                                         )}
                                     </p>
                                 `

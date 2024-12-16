@@ -5,8 +5,8 @@
 /storage/*.key
 /vendor
 .env
-.env.backup
-.env.production
+.env.*
+!.env.example
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
@@ -20,3 +20,11 @@ yarn-error.log
 *.log
 *.sqlite
 *.sqlite-journal
+.php-cs-fixer.cache
+.phpunit.cache
+coverage.xml
+.phpunit.result.cache
+.php_cs.cache
+_ide_helper.php
+.phpstorm.meta.php
+docker-compose.override.yml

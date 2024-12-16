@@ -19,14 +19,20 @@ class CheckPrivateRelay
     public function handle(Request $request, Closure $next)
     {
         try {
-            $clientIp = $request->ip();
-            $userAgent = $request->userAgent();
+            // Try different methods to get the client IP
+            $clientIp = $request->header('x-forwarded-for') ?? 
+                       $request->server('REMOTE_ADDR') ?? 
+                       $request->ip() ?? 
+                       '127.0.0.1'; // Fallback to localhost if nothing else works
+            
+            $userAgent = $request->userAgent() ?? 'Unknown';
             
             // Log incoming request data
             Log::debug('Private Relay Middleware - Request Data', [
                 'ip' => $clientIp,
                 'user_agent' => $userAgent,
-                'headers' => $request->headers->all()
+                'headers' => $request->headers->all(),
+                'server' => $request->server->all()
             ]);
             
             // Get relevant headers for Private Relay detection
@@ -44,13 +50,14 @@ class CheckPrivateRelay
 
             // Get device info with raw values
             $deviceInfo = $this->relayService->detectDevice($userAgent);
+            Log::debug('Device Detection', [
+                'user_agent' => $userAgent,
+                'device_info' => $deviceInfo
+            ]);
+
+            // Add raw values to device info
             $deviceInfo['user_agent'] = $userAgent;
             $deviceInfo['headers'] = $headers;
-
-            // Check if we have valid data
-            if (!$clientIp) {
-                throw new \RuntimeException('Unable to determine client IP address');
-            }
 
             $isPrivateRelay = $this->relayService->isPrivateRelayIP($clientIp);
 
@@ -82,10 +89,14 @@ class CheckPrivateRelay
                     'is_iphone' => false,
                     'is_mac' => false,
                     'is_safari' => false,
+                    'is_firefox' => false,
+                    'is_chrome' => false,
+                    'is_chromium' => false,
+                    'browser' => 'Unknown',
                     'user_agent' => $request->userAgent() ?? 'Unknown',
                     'headers' => []
                 ],
-                'raw_ip' => $request->ip() ?? 'Unknown'
+                'raw_ip' => $request->ip() ?? '127.0.0.1'
             ]);
 
             return $next($request);

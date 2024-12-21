@@ -17,8 +17,12 @@ FROM php:8.2-cli
 RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
+    sqlite3 \
+    libsqlite3-dev \
+    libbrotli-dev \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-install zip pdo_sqlite opcache
+
 
 # Install Swoole
 RUN pecl install swoole && docker-php-ext-enable swoole
